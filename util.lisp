@@ -60,3 +60,17 @@
 (defmacro with-ifconf ((var) &body body)
   `(with-zeroset-alien (,var ifconf)
      ,@body))
+
+(defmacro with-arpreq ((var &key if-name family ip) &body body)
+  `(with-zeroset-alien (,var arpreq)
+     (when ,family
+       (setf (sockaddr-in.family (arpreq.pa ,var)) ,family)) ;; XXX
+     (when ,ip
+       (dotimes (i 4)
+         (setf (deref (sockaddr-in.addr (arpreq.pa ,var)) i)
+               (aref ,ip i))))
+     (setf (sockaddr.family (arpreq.ha ,var)) #x0100) ;; XXX: hwtype == eth == #x0100
+
+     (when ,if-name
+       (strncpy (arpreq.dev ,var) ,if-name +IFNAMSIZ+))
+     ,@body))

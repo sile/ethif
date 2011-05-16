@@ -4,7 +4,7 @@
   :name "ethif"
   :version "0.0.1"
   :author "Takeru Ohta"
-  :description "TODO: ... Ethernet Interface ..."
+  :description "show / manipulate ethernet interface"
  
   :serial t
   :components ((:file "package")

@@ -24,23 +24,40 @@
 (defmacro sockaddr-in.port (o) `(slot ,o 'port))
 (defmacro sockaddr-in.addr (o) `(slot ,o 'addr))
 
+(define-alien-type ifmap
+  (struct nil
+    (mem_start unsigned-long)
+    (mem_end unsigned-long)
+    (irq char)
+    (dma char)
+    (port char)))
+
 (define-alien-type ifreq
   (struct nil
     (name (array char #.+IFNAMSIZ+))
     (u (union nil
          (index int)
          (mtu int)
+         (metric int)
          (flags short)
+         (dstaddr sockaddr-in)
+         (broadaddr sockaddr-in)
+         (netmask sockaddr-in)
          (hwaddr sockaddr)
-         (sockaddr sockaddr-in)
+         (sockaddr sockaddr-in) ;; TODO: -> addr
+         (map ifmap)
          (__ (array char #.+IFNAMSIZ+))))))
 (define-symbol-macro ifreq.size (alien-size ifreq :bytes))
 (defmacro ifreq.name (o) `(slot ,o 'name))
 (defmacro ifreq.index (o) `(slot (slot ,o 'u) 'index))
 (defmacro ifreq.mtu (o) `(slot (slot ,o 'u) 'mtu))
+(defmacro ifreq.metric (o) `(slot (slot ,o 'u) 'metric))
 (defmacro ifreq.flags (o) `(slot (slot ,o 'u) 'flags))
 (defmacro ifreq.hwaddr (o) `(slot (slot ,o 'u) 'hwaddr))
 (defmacro ifreq.sockaddr (o) `(slot (slot ,o 'u) 'sockaddr))
+(defmacro ifreq.netmask (o) `(slot (slot ,o 'u) 'netmask))
+(defmacro ifreq.dstaddr (o) `(slot (slot ,o 'u) 'dstaddr))
+(defmacro ifreq.broadaddr (o) `(slot (slot ,o 'u) 'broadaddr))
 
 (define-alien-type ifconf
   (struct nil
@@ -72,3 +89,17 @@
 (defmacro sockaddr-ll.pkttype (o) `(slot ,o 'pkttype))
 (defmacro sockaddr-ll.halen (o) `(slot ,o 'halen))
 (defmacro sockaddr-ll.addr (o) `(slot ,o 'addr))
+
+(define-alien-type arpreq 
+  (struct nil
+    (pa sockaddr-in) ; protocol address 
+    (ha sockaddr) ; hardware address
+    (flags int)   ; flags
+    (netmask sockaddr) ; netmask of protocol address
+    (dev (array char #.+IFNAMSIZ+))))
+(define-symbol-macro arpreq.size (alien-size arpreq :bytes))
+(defmacro arpreq.pa (o) `(slot ,o 'pa))
+(defmacro arpreq.ha (o) `(slot ,o 'ha))
+(defmacro arpreq.flags (o) `(slot ,o 'flags))
+(defmacro arpreq.netmask (o) `(slot ,o 'netmask))
+(defmacro arpreq.dev (o) `(slot ,o 'dev))

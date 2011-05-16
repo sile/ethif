@@ -60,7 +60,6 @@
 ;;; SIOCxxx
 (defconstant +SIOCINQ+ #x541B "TODO")
 (defconstant +SIOCOUTQ+ #x5411 "TODO")
-(defconstant +SIOCADDRT #x890B "add routing table entry")
 (defconstant +SIOCADDRT+ #x890B "add routing table entry")
 (defconstant +SIOCDELRT+ #x890C "delete routing table entry")
 (defconstant +SIOCRTMSG+ #x890D	"call to routing system")
@@ -91,7 +90,7 @@
 (defconstant +SIOCGIFSLAVE+ #x8929 "Driver slaving support")
 (defconstant +SIOCSIFSLAVE+ #x8930 "TODO")
 (defconstant +SIOCADDMULTI+ #x8931 "Multicast address lists")
-(defconstant +SIOCDELMULTI+ #x8932)
+(defconstant +SIOCDELMULTI+ #x8932 "TODO")
 (defconstant +SIOCGIFINDEX+ #x8933 "name -> if_index mapping")
 (defconstant +SIOGIFINDEX+ +SIOCGIFINDEX+ "misprint compatibility :-)")
 (defconstant +SIOCSIFPFLAGS+ #x8934 "set/get extended flags set")
@@ -220,3 +219,13 @@
 (defconstant +ETH_P_TRAILER+   #x001C "Trailer switch tagging")
 (defconstant +ETH_P_PHONET+    #x00F5 "Nokia Phonet frames")
 (defconstant +ETH_P_IEEE802154+ #x00F6 "IEEE802.15.4 frame")
+
+
+;;; ATF_xxx
+(defconstant +ATF_COM+ #x02 "completed entry (ha valid)")
+(defconstant +ATF_PERM+ #x04 "permanent entry")
+(defconstant +ATF_PUBL+ #x08 "publish entry")
+(defconstant +ATF_USETRAILERS+ #x10 "has requested trailers")
+(defconstant +ATF_NETMASK+ #x20 "want to use a netmask (only")
+(defconstant +ATF_DONTPUB+ #x40 "don't answer this addresses")
+(defconstant +ATF_MAGIC+ #x80 "Automatically added entry")
