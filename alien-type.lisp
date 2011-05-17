@@ -37,6 +37,7 @@
     (name (array char #.+IFNAMSIZ+))
     (u (union nil
          (index int)
+         (txqlen int)
          (mtu int)
          (metric int)
          (flags short)
@@ -51,6 +52,7 @@
 (define-symbol-macro ifreq.size (alien-size ifreq :bytes))
 (defmacro ifreq.name (o) `(slot ,o 'name))
 (defmacro ifreq.index (o) `(slot (slot ,o 'u) 'index))
+(defmacro ifreq.txqlen (o) `(slot (slot ,o 'u) 'txqlen))
 (defmacro ifreq.mtu (o) `(slot (slot ,o 'u) 'mtu))
 (defmacro ifreq.metric (o) `(slot (slot ,o 'u) 'metric))
 (defmacro ifreq.flags (o) `(slot (slot ,o 'u) 'flags))

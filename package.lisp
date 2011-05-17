@@ -1,17 +1,17 @@
 (defpackage ethif
   (:use :common-lisp :sb-alien)
-  (:export name set-name
+  (:export name rename
            index
            hwaddr set-hwaddr
-           ip set-ip 
-           if-list
+           tx-queue-length set-tx-queue-length
+           ipaddr set-ipaddr
            flags set-flags
            flag
-           mtu
+           mtu set-mtu
            netmask set-netmask
            broadaddr set-broadaddr
-           dstaddr
-           metric))
+           dstaddr set-dstaddr
+           list-all-ip-assigned-interfaces))
 (in-package :ethif)
 
 (deftype octet () '(unsigned-byte 8))
