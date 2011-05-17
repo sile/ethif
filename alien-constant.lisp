@@ -11,8 +11,8 @@
 
 
 ;;; IFxxx
-(defconstant +IFNAMSIZ+ 16 "TODO")
-(defconstant +IFHWADDRLE+ 6 "TODO")
+(defconstant +IFNAMSIZ+ 16)
+(defconstant +IFHWADDRLE+ 6)
 
 
 ;;; Address families
@@ -34,7 +34,7 @@
 (defconstant +AF_NETBEUI+ 13 "Reserved for 802.2LLC project")
 (defconstant +AF_SECURITY+ 14 "Security callback pseudo AF")
 (defconstant +AF_KEY+ 15 "PF KEY key management API")
-(defconstant +AF_NETLINK+ 16 "TODO")
+(defconstant +AF_NETLINK+ 16)
 (defconstant +AF_ROUTE+ +AF_NETLINK+ "Alias to emulate 4.4BSD")
 (defconstant +AF_PACKET+ 17 "acket family")
 (defconstant +AF_ASH+ 18 "Ash")
@@ -58,8 +58,8 @@
 
 
 ;;; SIOCxxx
-(defconstant +SIOCINQ+ #x541B "TODO")
-(defconstant +SIOCOUTQ+ #x5411 "TODO")
+(defconstant +SIOCINQ+ #x541B)
+(defconstant +SIOCOUTQ+ #x5411)
 (defconstant +SIOCADDRT+ #x890B "add routing table entry")
 (defconstant +SIOCDELRT+ #x890C "delete routing table entry")
 (defconstant +SIOCRTMSG+ #x890D	"call to routing system")
@@ -85,16 +85,16 @@
 (defconstant +SIOCSIFNAME+ #x8923 "set interface name")
 (defconstant +SIOCSIFHWADDR+ #x8924 "set hardware address")
 (defconstant +SIOCGIFENCAP+ #x8925 "get/set encapsulations")
-(defconstant +SIOCSIFENCAP+ #x8926 "TODO")
+(defconstant +SIOCSIFENCAP+ #x8926)
 (defconstant +SIOCGIFHWADDR+ #x8927 "Get hardware address")
 (defconstant +SIOCGIFSLAVE+ #x8929 "Driver slaving support")
-(defconstant +SIOCSIFSLAVE+ #x8930 "TODO")
+(defconstant +SIOCSIFSLAVE+ #x8930)
 (defconstant +SIOCADDMULTI+ #x8931 "Multicast address lists")
-(defconstant +SIOCDELMULTI+ #x8932 "TODO")
+(defconstant +SIOCDELMULTI+ #x8932)
 (defconstant +SIOCGIFINDEX+ #x8933 "name -> if_index mapping")
 (defconstant +SIOGIFINDEX+ +SIOCGIFINDEX+ "misprint compatibility :-)")
 (defconstant +SIOCSIFPFLAGS+ #x8934 "set/get extended flags set")
-(defconstant +SIOCGIFPFLAGS+ #x8935 "TODO")
+(defconstant +SIOCGIFPFLAGS+ #x8935)
 (defconstant +SIOCDIFADDR+ #x8936 "delete PA address")
 (defconstant +SIOCSIFHWBROADCAST+ #x8937 "set hardware broadcast addr")
 (defconstant +SIOCGIFCOUNT+ #x8938 "get number of devices")
@@ -131,32 +131,41 @@
 (defconstant +SIOCBRDELBR+ #x89a1 "remove bridge device")
 (defconstant +SIOCBRADDIF+ #x89a2 "add interface to bridge")
 (defconstant +SIOCBRDELIF+ #x89a3 "remove interface from bridge")
-(defconstant +SIOCSHWTSTAMP+ #x89b0 "TODO")
+(defconstant +SIOCSHWTSTAMP+ #x89b0)
 (defconstant +SIOCDEVPRIVATE+ #x89F0 "to 89FF")
 (defconstant +SIOCPROTOPRIVATE+ #x89E0 "to 89EF")
 
 
 ;;; IFF_xxx
-(defconstant +IFF_UP+ #x1 "Interface is up")
-(defconstant +IFF_BROADCAST+ #x2 "Broadcast address valid")
-(defconstant +IFF_DEBUG+ #x4 "Turn on debugging")
-(defconstant +IFF_LOOPBACK+ #x8 "Is a loopback net")
-(defconstant +IFF_POINTOPOINT+ #x10 "Interface is point-to-point link")
-(defconstant +IFF_NOTRAILERS+ #x20 "Avoid use of trailers")
-(defconstant +IFF_RUNNING+ #x40 "Resources allocated")
-(defconstant +IFF_NOARP+ #x80 "No address resolution protocol")
-(defconstant +IFF_PROMISC+ #x100 "Receive all packets")
-(defconstant +IFF_ALLMULTI+ #x200 "Receive all multicast packets")
-(defconstant +IFF_MASTER+ #x400 "Master of a load balancer")
-(defconstant +IFF_SLAVE+ #x800 "Slave of a load balancer")
-(defconstant +IFF_MULTICAST+ #x1000 "Supports multicast")
-(defconstant +IFF_PORTSEL+ #x2000 "Can set media type")
-(defconstant +IFF_AUTOMEDIA+ #x4000 "Auto media select active")
-(defconstant +IFF_DYNAMIC+ #x8000 "Dialup device with changing addresses")
+(defvar *iff-list*
+  (list
+   (defconstant +IFF_UP+ #x1 "Interface is up")
+   (defconstant +IFF_BROADCAST+ #x2 "Broadcast address valid")
+   (defconstant +IFF_DEBUG+ #x4 "Turn on debugging")
+   (defconstant +IFF_LOOPBACK+ #x8 "Is a loopback net")
+   (defconstant +IFF_POINTOPOINT+ #x10 "Interface is point-to-point link")
+   (defconstant +IFF_NOTRAILERS+ #x20 "Avoid use of trailers")
+   (defconstant +IFF_RUNNING+ #x40 "Resources allocated")
+   (defconstant +IFF_NOARP+ #x80 "No address resolution protocol")
+   (defconstant +IFF_PROMISC+ #x100 "Receive all packets")
+   (defconstant +IFF_ALLMULTI+ #x200 "Receive all multicast packets")
+   (defconstant +IFF_MASTER+ #x400 "Master of a load balancer")
+   (defconstant +IFF_SLAVE+ #x800 "Slave of a load balancer")
+   (defconstant +IFF_MULTICAST+ #x1000 "Supports multicast")
+   (defconstant +IFF_PORTSEL+ #x2000 "Can set media type")
+   (defconstant +IFF_AUTOMEDIA+ #x4000 "Auto media select active")
+   (defconstant +IFF_DYNAMIC+ #x8000 "Dialup device with changing addresses")))
+(defvar *iff-assoc-list*
+  (mapcar 
+   (lambda (f &aux (nm (symbol-name f)))
+     (list f (symbol-value f) (intern (subseq nm 5 (1- (length nm))) :keyword)))
+   *iff-list*))
+(defun iff.key->int (kw)
+  (second (find kw *iff-assoc-list* :key #'third)))
 
 
 ;;; ETH_P_xxx
-(defconstant +ETH_P_DEFAULT+   #x0000 "TODO")
+(defconstant +ETH_P_DEFAULT+   #x0000)
 (defconstant +ETH_P_LOOP+      #x0060 "Ethernet Loopback packet")
 (defconstant +ETH_P_PUP+       #x0200 "Xerox PUP packet")
 (defconstant +ETH_P_PUPAT+     #x0201 "Xerox PUP Addr Trans packet")

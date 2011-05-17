@@ -115,6 +115,40 @@
                 COLLECT (to-lisp-string (ifreq.name req))))
           (free-alien reqs))))))
 
+(defun flags (interface-name)
+  (with-ifreq (req :if-name interface-name)
+    (with-eth-ioctl (+SIOCGIFFLAGS+ req)
+      (loop WITH flags = (ifreq.flags req)
+            FOR (_ mask kw) IN *iff-assoc-list*
+            WHEN (plusp (logand mask flags))
+        COLLECT kw))))
+
+(defun set-flags (interface-name flags)
+  (with-ifreq (req :if-name interface-name
+                   :flags
+                   (loop FOR flag IN flags
+                         FOR mask = (or (iff.key->int flag)
+                                        (format *error-output* "~&; WARN# undefined flag specified: ~a~%" flag)
+                                        0)
+                         SUM mask))
+    (with-eth-ioctl (+SIOCSIFFLAGS+ req)
+      flags)))
+
+(defun flag (interface-name flag)
+  (declare (#.`(member ,@(mapcar #'third *iff-assoc-list*)) flag))
+  (with-ifreq (req :if-name interface-name)
+    (with-eth-ioctl (+SIOCGIFFLAGS+ req)
+      (plusp (logand (iff.key->int flag) (ifreq.flags req))))))
+                     
+(defun set-flag (interface-name flag enable)
+  (declare (#.`(member ,@(mapcar #'third *iff-assoc-list*)) flag))
+  (with-ifreq (req :if-name interface-name)
+    (with-eth-ioctl (+SIOCGIFFLAGS+ req)
+      (setf (ifreq.flags req)
+            (boole (if enable boole-ior boole-andc2) (ifreq.flags req) (iff.key->int flag)))
+      (with-eth-ioctl (+SIOCSIFFLAGS+ req)
+        enable))))
+
 #+IGNORE
 (defun metric (interface-name)
   (with-ifreq (req :if-name interface-name)
@@ -129,33 +163,6 @@
       (ioctl fd +SIOCGARP+ req :sap t)
       (to-lisp-octets (sockaddr.data (arpreq.ha req)) 6)
       )))
-
-
-(defun set-flags (interface-name flags &key (socket-domain +AF_INET+) (socket-type +SOCK_DGRAM+))
-  (declare #.*muffle-compiler-note*)
-  (with-socket-fd (fd socket-domain socket-type)
-    (with-ifreq (req :if-name interface-name)
-      (let ((new-flags
-             (loop FOR flag IN flags
-                   FOR flag-const = (intern (mkstr "+IFF_"flag"+") :ethif)
-                   FOR val = (symbol-value flag-const) ;; TODO:
-               SUM val)))
-        (setf (ifreq.flags req) new-flags)
-        (ioctl fd +SIOCSIFFLAGS+ req :sap t)))))
-  
-(defun flags (interface-name &key (socket-domain +AF_INET+) (socket-type +SOCK_DGRAM+))
-  (declare #.*muffle-compiler-note*)
-  (with-socket-fd (fd socket-domain socket-type)
-    (with-ifreq (req :if-name interface-name)
-      (ioctl fd +SIOCGIFFLAGS+ req :sap t)
-      (let ((flags (ifreq.flags req)))
-        ;; TODO:
-        (mapcar (lambda (sym)
-                  (let ((nm (symbol-name sym)))
-                    (intern (subseq nm 5 (1- (length nm))) :keyword)))
-                (remove-if (lambda (flag-sym)
-                             (zerop (logand (symbol-value flag-sym) flags)))
-                           (apropos-list "+IFF_" :ethif)))))))
 
 ;; (defun map )
 

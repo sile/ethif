@@ -45,7 +45,8 @@
      
 (defmacro with-ifreq ((var &key if-name if-index 
                            ha-family ha-hwaddr int-val 
-                           pa-family pa-addr) &body body)
+                           pa-family pa-addr
+                           flags) &body body)
   `(with-zeroset-alien (,var ifreq)
      (when ,if-name
        (strncpy (ifreq.name ,var) ,if-name +IFNAMSIZ+))
@@ -62,6 +63,9 @@
      (when ,pa-addr
        (memcpy (sockaddr-in.addr (ifreq.sockaddr ,var)) ,pa-addr 4))
      
+     (when ,flags
+       (setf (ifreq.flags ,var) ,flags))
+
      (when ,int-val
        (setf (ifreq.index ,var) ,int-val)) ; XXX:
      ,@body))
@@ -107,5 +111,6 @@
 
 (defmacro with-eth-ioctl ((cmd arg) &body body)
   `(if (eth-ioctl ,cmd ,arg)
-       (values (locally ,@body) nil)
+       (multiple-value-bind (#1=#:fst #2=#:snd) (locally ,@body) 
+         (values #1# #2#))
      (values nil (error-reason))))

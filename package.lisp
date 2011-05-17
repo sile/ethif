@@ -6,7 +6,7 @@
            tx-queue-length set-tx-queue-length
            ipaddr set-ipaddr
            flags set-flags
-           flag
+           flag set-flag
            mtu set-mtu
            netmask set-netmask
            broadaddr set-broadaddr
