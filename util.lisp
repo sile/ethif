@@ -23,6 +23,9 @@
 (defun mksym (&rest args)
   (intern (format nil "~{~:@(~A~)~}" args)))
 
+(defun mkstr (&rest args)
+  (format nil "~{~:@(~A~)~}" args))
+
 (defun make-socket-fd (domain type &key (protocol +ETH_P_DEFAULT+))
   (let ((fd (socket domain type protocol)))
     (when (/= fd -1)

@@ -5,11 +5,11 @@
            hwaddr set-hwaddr
            ip set-ip 
            if-list
-           flags
+           flags set-flags
            flag
            mtu
-           netmask
-           broadaddr
+           netmask set-netmask
+           broadaddr set-broadaddr
            dstaddr
            metric))
 (in-package :ethif)

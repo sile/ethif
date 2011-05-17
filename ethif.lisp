@@ -12,6 +12,17 @@
       (ioctl fd +SIOCGIFHWADDR+ req :sap t)
       (to-lisp-octets (sockaddr.data (ifreq.hwaddr req)) 6))))
 
+(defun set-hwaddr (interface-name new-hwaddr &key (socket-domain +AF_INET+) (socket-type +SOCK_DGRAM+))
+  (declare #.*muffle-compiler-note*)
+  (with-socket-fd (fd socket-domain socket-type)
+    (with-ifreq (req :if-name interface-name)
+      ;; TODO: imporove
+      (setf (sockaddr.family (ifreq.hwaddr req)) +ARPHRD_ETHER+)
+      (let ((data (sockaddr.data (ifreq.hwaddr req))))
+        (dotimes (i 6)
+          (setf (deref data i) (aref new-hwaddr i))))
+      (ioctl fd +SIOCSIFHWADDR+ req :sap t))))
+
 (defun index (interface-name &key (socket-domain +AF_INET+) (socket-type +SOCK_DGRAM+))
   (declare #.*muffle-compiler-note*)
   (with-socket-fd (fd socket-domain socket-type)
@@ -50,12 +61,32 @@
       (ioctl fd +SIOCGIFADDR+ req :sap t)
       (to-lisp-octets (sockaddr-in.addr (ifreq.sockaddr req)) 4))))
 
+(defun set-ip (interface-name new-ip &key (socket-domain +AF_INET+) (socket-type +SOCK_DGRAM+))
+  (declare #.*muffle-compiler-note*)
+  (with-socket-fd (fd socket-domain socket-type)
+    (with-ifreq (req :if-name interface-name)
+      (setf (sockaddr-in.family (ifreq.sockaddr req)) +AF_INET+)
+      (let ((old-ip (sockaddr-in.addr (ifreq.sockaddr req))))
+        (dotimes (i 4)
+          (setf (deref old-ip i) (aref new-ip i))))
+      (ioctl fd +SIOCSIFADDR+ req :sap t))))
+
 (defun broadaddr (interface-name &key (socket-domain +AF_INET+) (socket-type +SOCK_DGRAM+))
   (declare #.*muffle-compiler-note*)
   (with-socket-fd (fd socket-domain socket-type)
     (with-ifreq (req :if-name interface-name)
       (ioctl fd +SIOCGIFBRDADDR+ req :sap t)
       (to-lisp-octets (sockaddr-in.addr (ifreq.broadaddr req)) 4))))
+
+(defun set-broadaddr (interface-name new-addr &key (socket-domain +AF_INET+) (socket-type +SOCK_DGRAM+))
+  (declare #.*muffle-compiler-note*)
+  (with-socket-fd (fd socket-domain socket-type)
+    (with-ifreq (req :if-name interface-name)
+      (setf (sockaddr-in.family (ifreq.sockaddr req)) +AF_INET+)
+      (let ((old (sockaddr-in.addr (ifreq.broadaddr req))))
+        (dotimes (i 4)
+          (setf (deref old i) (aref new-addr i))))
+      (ioctl fd +SIOCSIFBRDADDR+ req :sap t))))
 
 (defun dstaddr (interface-name &key (socket-domain +AF_INET+) (socket-type +SOCK_DGRAM+))
   (declare #.*muffle-compiler-note*)
@@ -71,6 +102,16 @@
       (ioctl fd +SIOCGIFNETMASK+ req :sap t)
       (to-lisp-octets (sockaddr-in.addr (ifreq.netmask req)) 4))))
 
+(defun set-netmask (interface-name new-netmask &key (socket-domain +AF_INET+) (socket-type +SOCK_DGRAM+))
+  (declare #.*muffle-compiler-note*)
+  (with-socket-fd (fd socket-domain socket-type)
+    (with-ifreq (req :if-name interface-name)
+      (setf (sockaddr-in.family (ifreq.sockaddr req)) +AF_INET+)
+      (let ((old (sockaddr-in.addr (ifreq.netmask req))))
+        (dotimes (i 4)
+          (setf (deref old i) (aref new-netmask i))))
+      (ioctl fd +SIOCSIFNETMASK+ req :sap t))))
+
 (defun name (index &key (socket-domain +AF_INET+) (socket-type +SOCK_DGRAM+))
   (declare #.*muffle-compiler-note*)
   (with-socket-fd (fd socket-domain socket-type)
@@ -78,6 +119,25 @@
       (ioctl fd +SIOCGIFNAME+ req :sap t)
       (to-lisp-string (ifreq.name req)))))
 
+(defun set-name (old-name new-name &key (socket-domain +AF_INET+) (socket-type +SOCK_DGRAM+))
+  (declare #.*muffle-compiler-note*)
+  (with-socket-fd (fd socket-domain socket-type)
+    (with-ifreq (req :if-name old-name)
+      (strncpy (ifreq.new-name req) new-name +IFNAMSIZ+)
+      (ioctl fd +SIOCSIFNAME+ req :sap t))))
+
+(defun set-flags (interface-name flags &key (socket-domain +AF_INET+) (socket-type +SOCK_DGRAM+))
+  (declare #.*muffle-compiler-note*)
+  (with-socket-fd (fd socket-domain socket-type)
+    (with-ifreq (req :if-name interface-name)
+      (let ((new-flags
+             (loop FOR flag IN flags
+                   FOR flag-const = (intern (mkstr "+IFF_"flag"+") :ethif)
+                   FOR val = (symbol-value flag-const) ;; TODO:
+               SUM val)))
+        (setf (ifreq.flags req) new-flags)
+        (ioctl fd +SIOCSIFFLAGS+ req :sap t)))))
+  
 (defun flags (interface-name &key (socket-domain +AF_INET+) (socket-type +SOCK_DGRAM+))
   (declare #.*muffle-compiler-note*)
   (with-socket-fd (fd socket-domain socket-type)

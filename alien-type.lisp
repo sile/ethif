@@ -46,6 +46,7 @@
          (hwaddr sockaddr)
          (sockaddr sockaddr-in) ;; TODO: -> addr
          (map ifmap)
+         (new-name (array char #.+IFNAMSIZ+))
          (__ (array char #.+IFNAMSIZ+))))))
 (define-symbol-macro ifreq.size (alien-size ifreq :bytes))
 (defmacro ifreq.name (o) `(slot ,o 'name))
@@ -58,6 +59,7 @@
 (defmacro ifreq.netmask (o) `(slot (slot ,o 'u) 'netmask))
 (defmacro ifreq.dstaddr (o) `(slot (slot ,o 'u) 'dstaddr))
 (defmacro ifreq.broadaddr (o) `(slot (slot ,o 'u) 'broadaddr))
+(defmacro ifreq.new-name (o) `(slot (slot ,o 'u) 'new-name))
 
 (define-alien-type ifconf
   (struct nil
