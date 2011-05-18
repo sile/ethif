@@ -1,6 +1,5 @@
 (in-package :ethif)
 
-;; TODO: description
 (defun strncpy (buf str max)
   (dotimes (i (min (length str) max))
     (setf (deref buf i) (char-code (aref str i))))
@@ -12,24 +11,19 @@
   (dotimes (i size)
     (setf (deref alien-dst i) (aref lisp-src i))))
 
-;; TODO: description
 (defun mem-zero-set (sap size)
   (let ((*p (cast sap (* (unsigned 8)))))
     (dotimes (i size sap)
       (setf (deref *p i) 0))))
 
-;; TODO: description
-(defmacro with-zeroset-alien ((var type) &body body)
-  `(with-alien ((,var ,type))
-     (mem-zero-set ,var ,(mksym type ".SIZE"))
-     (locally
-      ,@body)))
-
-(defun mksym (&rest args)
-  (intern (format nil "~{~:@(~A~)~}" args)))
-
 (defun mkstr (&rest args)
   (format nil "~{~:@(~A~)~}" args))
+
+(defmacro with-zeroset-alien ((var type) &body body)
+  `(with-alien ((,var ,type))
+     (mem-zero-set ,var ,(intern (mkstr type ".SIZE")))
+     (locally
+      ,@body)))
 
 (defun make-socket-fd (domain type &key (protocol +ETH_P_DEFAULT+))
   (let ((fd (socket domain type protocol)))

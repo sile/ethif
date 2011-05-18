@@ -100,7 +100,7 @@
     (with-eth-ioctl (+SIOCSIFMTU+ req)
       new-mtu)))
 
-(defun list-all-ip-assigned-interfaces ()
+(defun list-ip-assigned-interfaces ()
   (with-ifconf (conf)
     ;; 1] get interface count
     (with-eth-ioctl (+SIOCGIFCONF+ conf)
@@ -124,13 +124,14 @@
         COLLECT kw))))
 
 (defun set-flags (interface-name flags)
-  (with-ifreq (req :if-name interface-name
-                   :flags
-                   (loop FOR flag IN flags
-                         FOR mask = (or (iff.key->int flag)
-                                        (format *error-output* "~&; WARN# undefined flag specified: ~a~%" flag)
-                                        0)
-                         SUM mask))
+  (with-ifreq 
+   (req :if-name interface-name
+        :flags
+        (loop FOR flag IN flags
+              FOR mask = (or (iff.key->int flag)
+                             (format *error-output* "~&; WARN# undefined flag specified: ~a~%" flag)
+                             0)
+              SUM mask))
     (with-eth-ioctl (+SIOCSIFFLAGS+ req)
       flags)))
 
@@ -150,20 +151,15 @@
         enable))))
 
 #+IGNORE
+(defun arp (interface-name ip)
+  (with-arpreq (req :if-name interface-name :family socket-domain
+                    :ip (or ip (ipaddr interface-name)))
+    (with-eth-ioctl (+SIOCGARP+ req)
+      (to-lisp-octets (sockaddr.data (arpreq.ha req)) 6))))
+
+#+IGNORE
 (defun metric (interface-name)
+  "METRIC is not implemented (always returns 0)"
   (with-ifreq (req :if-name interface-name)
     (with-eth-ioctl (+SIOCGIFMETRIC+ req)
       (ifreq.metric req))))
-
-(defun arp (interface-name &key (socket-domain +AF_INET+) (socket-type +SOCK_DGRAM+) ip)
-  (declare #.*muffle-compiler-note*)
-  (with-socket-fd (fd socket-domain socket-type)
-    (with-arpreq (req :if-name interface-name :family socket-domain
-                      :ip (or ip (ipaddr interface-name)))
-      (ioctl fd +SIOCGARP+ req :sap t)
-      (to-lisp-octets (sockaddr.data (arpreq.ha req)) 6)
-      )))
-
-;; (defun map )
-
-

@@ -11,7 +11,7 @@
            netmask set-netmask
            broadaddr set-broadaddr
            dstaddr set-dstaddr
-           list-all-ip-assigned-interfaces))
+           list-ip-assigned-interfaces))
 (in-package :ethif)
 
 (deftype octet () '(unsigned-byte 8))

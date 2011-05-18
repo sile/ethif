@@ -1,0 +1,115 @@
+[概要]
+・ネットワークインターフェース設定の取得/設定を行う関数群
+　・ioctl関数を使ってできる操作のlispラッパー
+・sbcl/linux環境に依存
+　・Ubuntu10.x/CentOS5.xのみで動作確認
+
+
+[バージョン]
+・0.0.1
+
+
+[処理系]
+・SBCL
+
+
+[インストール]
+# インストールする場合
+$ sbcl
+> (require :asdf)
+> (require :asdf-install)
+> (asdf-install:install "ethif-0.0.1.tar.gz")
+
+# 一度だけロードする場合
+$ tar zxvf ethif-0.0.1.tar.gz
+$ cd ethif-0.0.1
+$ sbcl
+> (require :asdf)
+> (asdf:load-system :ethif)
+
+
+[API]  ※ 設定・更新系の操作を行うにはroot権限が必要
+(ethif:index interface-name) => (or integer null)
+ # インターフェースのインデックスを取得する
+
+(ethif:name interface-index) => (or string null)
+ # インデックスに対応するインターフェース(名前)を取得する
+
+(ethif:rename interface-name new-interface-name) => (or string:new-interface-name null)
+ # インターフェースの名前を変更する
+
+(ethif:hwaddr interface-name) => (or #(xx xx xx xx xx xx) null)
+ # インターフェースのハードウェアアドレスを取得する
+
+(ethif:set-hwaddr interface-name #(xx xx xx xx xx xx):new-hwaddr) => (or new-hwaddr null)
+ # インターフェースのハードウェアアドレスを設定する
+
+(ethif:ipaddr interface-name) => (or #(xx xx xx xx) null)
+ # インターフェースのIPアドレスを取得する
+
+(ethif:set-ipaddr interface-name #(xx xx xx xx):new-addr) => (or new-addr null)
+ # インターフェースのIPアドレスを設定する
+
+(ethif:dstaddr interface-name) => (or #(xx xx xx xx) null)
+(ethif:set-dstaddr interface-name #(xx xx xx xx):new-addr) => (or new-addr null)
+
+(ethif:broadaddr interface-name) => (or #(xx xx xx xx) null)
+ # インターフェースのブロードキャストアドレスを取得する
+
+(ethif:set-broadaddr interface-name #(xx xx xx xx):new-addr) => (or new-addr null)
+ # インターフェースのブロードキャストアドレスを設定する
+
+(ethif:netmask interface-name) => (or #(xx xx xx xx) null)
+ # インターフェースのネットマスクを取得する
+
+(ethif:set-netmask interface-name #(xx xx xx xx):new-netmask) => (or new-netmask null)
+ # インターフェースのネットマスクを設定する
+
+(ethif:tx-queue-length interface-name) => (or integer null)
+ # インターフェースのTXキュー長を取得する
+
+(ethif:set-tx-queue-length interface-name new-length) => (or integer:new-length null)
+ # インターフェースのTXキュー長に設定する
+
+(ethif:mtu interface-name) => (or integer null)
+ # インターフェースのMTUを取得する
+
+(ethif:set-mtu interface-name new-mtu) => (or integer:new-mtu null)
+ # インターフェースのMTUを設定する
+
+(ethif:flags interface-name) => (or (list flag) null)
+ # インターフェースでONに設定されているフラグ一覧を取得する
+ #
+ ## == flag ==
+ ## :up          インターフェースは動作中。
+ ## :broadcast   有効なブロードキャストアドレスがセットされている。
+ ## :debug       内部のデバッグフラグ。
+ ## :loopback    インターフェースはループバックである。
+ ## :pointopoint インターフェースは point-to-point リンクである。
+ ## :running     リソースが割り当て済み。
+ ## :noarp       arp プロトコルがない。
+ ## :promisc    インターフェースは promiscuous モードである。
+ ## :notrailers trailer の利用を避ける。
+ ## :allmulti   全てのマルチキャストパケットを受信する。
+ ## :master     負荷分散グループのマスターである。
+ ## :slave      負荷分散グループのスレーブである。
+ ## :multicast  マルチキャストをサポートしている。
+ ## :portsel    ifmap によってメディアタイプを選択できる。
+ ## :automedia  自動メディア選択が有効になっている。
+ ## :dynamic    このインターフェースが閉じると、アドレスは失われる。
+ ## :lower_up   ドライバからの L1 アップの通知 (Linux 2.6.17 以降)
+ ## :dormant    ドライバからの休止状態の通知 (Linux 2.6.17 以降)
+ ## :echo       送られたパケットをエコーする (Linux 2.6.25 以降)
+	
+(ethif:set-flags interface-name new-flags) => (or new-flags null)
+ # インターフェースのフラグを設定する
+ # new-flagsに含まれるフラグはONに設定され、含まれないフラグはOFFに設定される
+
+(ethif:flag interface-name flag) => (or boolean null)
+ # インターフェースの特定のフラグがONになっているかどうかを判定する
+
+(ethif:set-flag interface-name flag enable) => (or boolean null)
+ # インターフェースの特定のフラグのON/OFFを切り替える
+
+(ethif:list-ip-assigned-interfaces) => list
+ # IPアドレスが割り当てられている全てのインターフェース(の名前)を取得する

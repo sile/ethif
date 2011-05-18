@@ -1,9 +1,7 @@
 (in-package :ethif)
 
-;; TODO: 整理
 (define-alien-type size_t unsigned-long)
 (define-alien-type socklen_t (unsigned 32))
-(define-alien-type __be16 (unsigned 16))
 
 (define-alien-type sockaddr
   (struct nil
@@ -79,7 +77,7 @@
 (define-alien-type sockaddr-ll
   (struct nil
     (family   unsigned-short)
-    (protocol __be16)
+    (protocol (unsigned 16))
     (ifindex  int)
     (hatype   unsigned-short)
     (pkttype  unsigned-char)
